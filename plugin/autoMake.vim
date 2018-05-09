@@ -72,6 +72,7 @@ endfunc
   
   
 func! CompileCode()  
+		exe(":cd %:p:h")
         exec "w"  
         if &filetype == "cpp"  
                 exec "call CompileGpp()"  
@@ -106,7 +107,6 @@ function! ViewInBrowser()
 endfunction 
   
 func! RunResult()  
-		exe(":cd %:p:h")
         if &filetype != "python"  
             call CompileCode()
         endif
