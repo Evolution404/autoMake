@@ -106,6 +106,7 @@ function! ViewInBrowser()
 endfunction 
   
 func! RunResult()  
+		exe(":cd %:p:h")
         if &filetype != "python"  
             call CompileCode()
         endif
