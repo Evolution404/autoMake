@@ -125,10 +125,19 @@ func! RunResult()
             exec "call ViewInBrowser()"
         endif  
 endfunc  
+
+func! <SID>Debug()
+    packadd termdebug
+    exec 'set makeprg=gcc\ -g\ '.expand("%").'\ -o\ '.expand("%<")
+    make
+    exec "Termdebug %<"
+    exec "norm \<c-w>j"
+    exec "norm \<c-w>j"
+    exec "norm \<c-w>L"
+    exec "norm \<c-w>h"
+endf
   
-"map <F5> :call CompileCode()<CR>  
-"imap <F5> <ESC>:call CompileCode()<CR>  
-"vmap <F5> <ESC>:call CompileCode()<CR>  
   
 map <F5> :call RunResult()<CR>
+map <F6> :call <SID>Debug()<cr>
 
