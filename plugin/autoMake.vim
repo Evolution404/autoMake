@@ -128,7 +128,11 @@ endfunc
 
 func! <SID>Debug()
     packadd termdebug
-    exec 'set makeprg=gcc\ -g\ '.expand("%").'\ -o\ '.expand("%<")
+    if &filetype == "c"  
+      exec 'set makeprg=gcc\ -g\ '.expand("%").'\ -o\ '.expand("%<")
+    elseif &filetype == "cpp"
+      exec 'set makeprg=g++\ -g\ '.expand("%").'\ -o\ '.expand("%<")
+    endif
     make
     exec "Termdebug %<"
     exec "norm \<c-w>j"
