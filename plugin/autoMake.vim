@@ -3,7 +3,11 @@
 "------------------------------------------------------------------------------
 
 func! CompileGcc()  
-    exec "w"  
+    " 如果存在makefile文件 那么就直接执行make
+    if filereadable("makefile") || filereadable("Makefile")
+      make
+      return
+    endif
     let compilecmd="!gcc "  
     let compileflag="-o %< "  
     if search("mpi\.h") != 0  
@@ -24,7 +28,6 @@ func! CompileGcc()
     exec compilecmd." % ".compileflag  
 endfunc  
 func! CompileGpp()  
-    exec "w"  
     let compilecmd="!g++ "  
     let compileflag="-o %< "  
     let link=""
@@ -73,7 +76,6 @@ endfunc
   
 func! CompileCode()  
 		exe(":cd %:p:h")
-        exec "w"  
         if &filetype == "cpp"  
                 exec "call CompileGpp()"  
         elseif &filetype == "c"  
@@ -107,33 +109,26 @@ function! ViewInBrowser()
 endfunction 
   
 func! RunResult()  
-        if &filetype != "python"  
-            call CompileCode()
-        endif
-        exec "w"  
-        if search("mpi\.h") != 0  
-            exec "!mpirun -np 4 ./%<"  
-        elseif &filetype == "cpp"  
-            exec "! ./%<"  
-        elseif &filetype == "c"  
-            exec "! ./%<"  
-        elseif &filetype == "python"  
-            exec "call RunPython()"  
-        elseif &filetype == "java"  
-            exec "!java %<"  
-	elseif &filetype == "html"  
-            exec "call ViewInBrowser()"
-        endif  
+    if &filetype != "python"  
+        call CompileCode()
+    endif
+    if search("mpi\.h") != 0  
+        exec "!mpirun -np 4 ./%<"  
+    elseif &filetype == "cpp"  
+        exec "! ./%<"  
+    elseif &filetype == "c"  
+        exec "! ./%<"  
+    elseif &filetype == "python"  
+        exec "call RunPython()"  
+    elseif &filetype == "java"  
+        exec "!java %<"  
+    elseif &filetype == "html"  
+        exec "call ViewInBrowser()"
+    endif  
 endfunc  
 
 func! <SID>Debug()
     packadd termdebug
-    if &filetype == "c"  
-      exec 'set makeprg=gcc\ -g\ '.expand("%").'\ -o\ '.expand("%<")
-    elseif &filetype == "cpp"
-      exec 'set makeprg=g++\ -g\ '.expand("%").'\ -o\ '.expand("%<")
-    endif
-    make
     exec "Termdebug %<"
     exec "norm \<c-w>j"
     exec "norm \<c-w>j"
@@ -141,7 +136,5 @@ func! <SID>Debug()
     exec "norm \<c-w>h"
 endf
   
-  
 map <F5> :call RunResult()<CR>
 map <F6> :call <SID>Debug()<cr>
-
